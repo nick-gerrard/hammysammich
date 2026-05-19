@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Love2D build output
+*.love
+
+# Claude Code
+.claude/
