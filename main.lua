@@ -27,13 +27,13 @@ function love.update(dt)
 		return
 	end
 
-	Player.update(dt, Map.getWalls())
+	Player.update(dt, Map.getSolids())
 	Enemy.update(dt, Player.getRect())
 	Snacks.update(Player.getRect(), Enemy.getRect())
+	Map.update(dt)
 
 	if Utils.checkCollision(Player.getRect(), Enemy.getRect()) then
 		GameState.set(C.STATE.LOSE)
-		Player.reset()
 	end
 
 	if Snacks.getPlayerScore() - Snacks.getVacScore() > 30 then
@@ -55,6 +55,20 @@ function love.draw()
 		love.graphics.print("Score: " .. Snacks.getPlayerScore(), 10, 10)
 		GameState.draw(Snacks.getPlayerScore())
 	end
+	if C.DEBUG then
+		love.graphics.setColor(1, 0, 0, 0.5)
+		local p = Player.getRect()
+		love.graphics.rectangle("line", p.x, p.y, p.width, p.height)
+
+		local e = Enemy.getRect()
+		love.graphics.rectangle("line", e.x, e.y, e.width, e.height)
+
+		for i, snack in ipairs(Snacks.getSnacks()) do
+			love.graphics.rectangle("line", snack.x, snack.y, snack.width, snack.height)
+		end
+
+		love.graphics.setColor(1, 1, 1)
+	end
 	love.graphics.setCanvas()
 	love.graphics.setColor(1, 1, 1)
 	local winW, winH = love.graphics.getDimensions()
@@ -72,6 +86,7 @@ function love.keypressed(key)
 		Player.reset()
 		Enemy.reset()
 		Snacks.reset()
+		Map.reset()
 		GameState.set(C.STATE.PLAYING)
 	end
 	if key == "f" then

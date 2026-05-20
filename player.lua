@@ -12,8 +12,8 @@ local hammy = {
 
 function Player.load()
 	hammy.image = love.graphics.newImage("assets/hammy.png")
-	hammy.sx = hammy.width / hammy.image:getWidth()
-	hammy.sy = hammy.height / hammy.image:getHeight()
+	hammy.sx = hammy.width / hammy.image:getWidth() * C.HAMMY_DISPLAY_SCALE
+	hammy.sy = hammy.height / hammy.image:getHeight() * C.HAMMY_DISPLAY_SCALE
 end
 
 function Player.update(dt, walls)
@@ -63,7 +63,11 @@ function Player.getRect()
 end
 
 function Player.draw()
-	love.graphics.draw(hammy.image, hammy.x, hammy.y, 0, hammy.sx, hammy.sy)
+	local centerX = hammy.x + hammy.width / 2
+	local centerY = hammy.y + hammy.height / 2
+	local ox = hammy.image:getWidth() / 2
+	local oy = hammy.image:getHeight() / 2
+	love.graphics.draw(hammy.image, centerX, centerY, 0, hammy.sy, hammy.sy, ox, oy)
 end
 
 function Player.reset()

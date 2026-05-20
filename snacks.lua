@@ -65,11 +65,15 @@ function Snacks.draw()
 end
 
 function Snacks.getPlayerScore()
-	return playerScore
+	return playerScore - vacScore
 end
 
 function Snacks.getVacScore()
 	return vacScore
+end
+
+function Snacks.getSnacks()
+	return snacks
 end
 
 function Snacks.reset()

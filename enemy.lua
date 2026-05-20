@@ -17,23 +17,16 @@ local vacuum = {
 
 function Enemy.load()
 	vacuum.image = love.graphics.newImage("assets/vacuum.png")
-	vacuum.sx = vacuum.width / vacuum.image:getWidth()
-	vacuum.sy = vacuum.height / vacuum.image:getHeight()
+	vacuum.sx = vacuum.width / vacuum.image:getWidth() * C.VACUUM_DISPLAY_SCALE
+	vacuum.sy = vacuum.height / vacuum.image:getHeight() * C.VACUUM_DISPLAY_SCALE
 end
 
 function Enemy.draw()
+	local centerX = vacuum.x + vacuum.width / 2
+	local centerY = vacuum.y + vacuum.height / 2
 	local ox = vacuum.image:getWidth() / 2
 	local oy = vacuum.image:getHeight() / 2
-	love.graphics.draw(
-		vacuum.image,
-		vacuum.x + vacuum.width / 2,
-		vacuum.y + vacuum.height / 2,
-		vacuum.angle or 0,
-		vacuum.sx,
-		vacuum.sy,
-		ox,
-		oy
-	)
+	love.graphics.draw(vacuum.image, centerX, centerY, vacuum.angle or 0, vacuum.sx, vacuum.sy, ox, oy)
 end
 
 function Enemy.getRect()
