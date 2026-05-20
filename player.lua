@@ -1,12 +1,13 @@
 local Utils = require("utils")
+local C = require("config")
 local Player = {}
 
 local hammy = {
 	x = 100,
 	y = 100,
-	width = 40,
-	height = 40,
-	speed = 200, --pixels per second
+	width = C.HAMMY_WIDTH,
+	height = C.HAMMY_HEIGHT,
+	speed = C.HAMMY_SPEED,
 }
 
 function Player.load()

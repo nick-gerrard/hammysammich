@@ -1,3 +1,4 @@
+local C = require("config")
 local Enemy = {}
 
 local vacuum = {
@@ -5,11 +6,11 @@ local vacuum = {
 	y = 300,
 	vx = 1,
 	vy = 0.5,
-	width = 40,
-	height = 80,
-	speed = 125,
+	width = C.VACUUM_WIDTH,
+	height = C.VACUUM_HEIGHT,
+	speed = C.VACUUM_SPEED_SWEEP,
 	distance = 800,
-	state = "sweeping",
+	state = C.VACUUM_STATE.SWEEPING,
 	timer = 0,
 	angle = 0,
 }
@@ -44,10 +45,12 @@ function Enemy.checkDistance(player)
 end
 
 function Enemy.swapState()
-	if vacuum.distance < 200 then
-		vacuum.state = "chasing"
+	if vacuum.distance < C.VACUUM_DETECTION_RADIUS then
+		vacuum.state = C.VACUUM_STATE.CHASING
+		vacuum.speed = C.VACUUM_SPEED_CHASE
 	else
-		vacuum.state = "sweeping"
+		vacuum.state = C.VACUUM_STATE.SWEEPING
+		vacuum.speed = C.VACUUM_SPEED_SWEEP
 	end
 end
 
@@ -55,7 +58,7 @@ function Enemy.update(dt, playerRect)
 	Enemy.checkDistance(playerRect)
 	Enemy.swapState()
 	vacuum.timer = vacuum.timer + dt
-	if vacuum.state == "chasing" then
+	if vacuum.state == C.VACUUM_STATE.CHASING then
 		local dx = playerRect.x - vacuum.x
 		local dy = playerRect.y - vacuum.y
 		local len = math.sqrt(dx * dx + dy * dy)
@@ -66,10 +69,10 @@ function Enemy.update(dt, playerRect)
 	else
 		vacuum.x = vacuum.x + vacuum.vx * vacuum.speed * dt
 		vacuum.y = vacuum.y + vacuum.vy * vacuum.speed * dt
-		if vacuum.x < 16 or vacuum.x + vacuum.width > 784 then
+		if vacuum.x < C.PLAY_MIN_X or vacuum.x + vacuum.width > C.PLAY_MAX_X then
 			vacuum.vx = -vacuum.vx
 		end
-		if vacuum.y < 16 or vacuum.y + vacuum.height > 584 then
+		if vacuum.y < C.PLAY_MIN_Y or vacuum.y + vacuum.height > C.PLAY_MAX_Y then
 			vacuum.vy = -vacuum.vy
 		end
 		if vacuum.timer >= 1.0 then
@@ -86,7 +89,7 @@ function Enemy.reset()
 	vacuum.vx = 1
 	vacuum.vy = 0.5
 	vacuum.timer = 0
-	vacuum.state = "sweeping"
+	vacuum.state = C.VACUUM_STATE.SWEEPING
 	vacuum.distance = 800
 end
 
