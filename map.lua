@@ -34,15 +34,15 @@ end
 
 function Map.update(dt)
 	obstacleTimer = obstacleTimer + dt
-	if obstacleTimer >= 15 then
+	if obstacleTimer >= 5 then
 		Map.generateObstacle(40, 40)
 		obstacleTimer = 0
 	end
 end
 
 function Map.reset()
-	for i, solid in ipairs(solids) do
-		if solid.tag == C.OBJECT_TAGS.OBSTACLE then
+	for i = #solids, 1, -1 do
+		if solids[i].tag == C.OBJECT_TAGS.OBSTACLE then
 			table.remove(solids, i)
 		end
 	end
