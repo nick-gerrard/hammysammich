@@ -43,6 +43,7 @@ function love.update(dt)
 	if Utils.checkCollision(Player.getRect(), Enemy.getRect()) then
 		if Enemy.isActive() then
 			GameState.set(C.STATE.LOSE)
+			Audio.stopVac()
 		end
 	end
 
