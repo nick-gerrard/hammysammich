@@ -24,14 +24,18 @@ function Menu.draw()
 	love.graphics.setColor(1, 0.82, 0.15)
 	love.graphics.printf("HAMILTON'S HOUSE", 0, 90, 800, "center")
 
-	-- hammy on the left, scaled up
+	-- hammy on the left, facing right
 	love.graphics.setColor(1, 1, 1)
-	local hs = 4
-	love.graphics.draw(hammyImage, 1, 230, 0, hs, hs)
+	local hs = 8
+	local hamW = hammyImage:getWidth() * hs
+	local hamH = hammyImage:getHeight() * hs
+	love.graphics.draw(hammyImage, 20, 230 - hamH / 2, 0, hs, hs)
 
 	-- vacuum on the right, flipped to face left
-	local vs = 3
-	love.graphics.draw(vacuumImage, 745, 230, 0, -vs, vs, vacuumImage:getWidth(), 1)
+	-- with negative scaleX and no origin offset, the image extends LEFT from x
+	local vs = 6
+	local vacH = vacuumImage:getHeight() * vs
+	love.graphics.draw(vacuumImage, 780, 230 - vacH / 2, 0, -vs, vs)
 
 	-- VS
 	love.graphics.setFont(titleFont)

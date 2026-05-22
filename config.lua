@@ -38,9 +38,20 @@ C.VACUUM_STATE = {
 	CHASING = "chasing",
 }
 
+C.OBSTACLE_SIZE = 50
+
 C.OBJECT_TAGS = {
-	WAll = "wall",
+	WALL = "wall",
 	OBSTACLE = "obstacle",
+	DOOR = "door",
+}
+
+C.DOOR_SIZE = 40
+C.DOOR_POSITION = {
+	RIGHT = "right",
+	LEFT = "left",
+	TOP = "top",
+	BOTTOM = "bottom",
 }
 
 C.DEBUG = false

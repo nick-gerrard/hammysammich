@@ -10,6 +10,13 @@ local hammy = {
 	speed = C.HAMMY_SPEED,
 }
 
+local resetPositions = {
+	[C.DOOR_POSITION.TOP] = { x = C.VIRTUAL_W / 2, y = C.VIRTUAL_H - 70 },
+	[C.DOOR_POSITION.BOTTOM] = { x = C.VIRTUAL_W / 2, y = 70 },
+	[C.DOOR_POSITION.RIGHT] = { x = 70, y = C.VIRTUAL_H / 2 },
+	[C.DOOR_POSITION.LEFT] = { x = C.VIRTUAL_W - 70, y = C.VIRTUAL_H / 2 },
+}
+
 function Player.load()
 	hammy.image = love.graphics.newImage("assets/hammy.png")
 	hammy.sx = hammy.width / hammy.image:getWidth() * C.HAMMY_DISPLAY_SCALE
@@ -70,9 +77,12 @@ function Player.draw()
 	love.graphics.draw(hammy.image, centerX, centerY, 0, hammy.sy, hammy.sy, ox, oy)
 end
 
-function Player.reset()
-	hammy.x = 100
-	hammy.y = 100
+function Player.reset(wall)
+	if wall then
+		hammy.x = resetPositions[wall].x
+		hammy.y = resetPositions[wall].y
+	end
+	return hammy.x, hammy.y
 end
 
 return Player

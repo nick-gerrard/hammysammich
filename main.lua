@@ -4,10 +4,15 @@ local Enemy = require("enemy")
 local Snacks = require("snacks")
 local GameState = require("gamestate")
 local Utils = require("utils")
+local Room = require("room")
 local Map = require("map")
 local Menu = require("menu")
+local Audio = require("audio")
 
 local canvas
+local currentRoom
+local currentLevel = 1
+local walls = { C.DOOR_POSITION.TOP, C.DOOR_POSITION.BOTTOM, C.DOOR_POSITION.LEFT, C.DOOR_POSITION.RIGHT }
 
 function love.load()
 	math.randomseed(os.time())
@@ -20,6 +25,10 @@ function love.load()
 	Enemy.load()
 	Snacks.load()
 	Menu.load()
+	GameState.load()
+	Audio.load()
+	Audio.startMusic()
+	currentRoom = Room.generate(currentLevel)
 end
 
 function love.update(dt)
@@ -27,17 +36,27 @@ function love.update(dt)
 		return
 	end
 
-	Player.update(dt, Map.getSolids())
-	Enemy.update(dt, Player.getRect())
-	Snacks.update(Player.getRect(), Enemy.getRect())
-	Map.update(dt)
+	Player.update(dt, currentRoom.solids)
+	Enemy.update(dt, Player.getRect(), currentRoom.solids)
+	Snacks.update(currentRoom.snacks, Player.getRect(), Enemy.getRect())
 
 	if Utils.checkCollision(Player.getRect(), Enemy.getRect()) then
-		GameState.set(C.STATE.LOSE)
+		if Enemy.isActive() then
+			GameState.set(C.STATE.LOSE)
+		end
 	end
 
-	if Snacks.getPlayerScore() - Snacks.getVacScore() > 30 then
-		GameState.set(C.STATE.WIN)
+	if Snacks.allEaten(currentRoom.snacks) and #currentRoom.doors == 0 then
+		table.insert(currentRoom.doors, Room.generateDoor(walls[math.random(#walls)]))
+	end
+
+	for i, door in ipairs(currentRoom.doors) do
+		if Utils.checkCollision(Player.getRect(), door) then
+			currentLevel = currentLevel + 1
+			currentRoom = Room.generate(currentLevel)
+			local spawnX, spawnY = Player.reset(door.wall)
+			Enemy.spawnDelayed(spawnX, spawnY, 1.0)
+		end
 	end
 end
 
@@ -49,11 +68,11 @@ function love.draw()
 	else
 		Player.draw()
 		Enemy.draw()
-		Snacks.draw()
-		Map.draw()
+		Snacks.draw(currentRoom.snacks)
+		Map.draw(currentRoom.solids)
+		Map.draw(currentRoom.doors)
 		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("Score: " .. Snacks.getPlayerScore(), 10, 10)
-		GameState.draw(Snacks.getPlayerScore())
+		GameState.draw()
 	end
 	if C.DEBUG then
 		love.graphics.setColor(1, 0, 0, 0.5)
@@ -63,7 +82,7 @@ function love.draw()
 		local e = Enemy.getRect()
 		love.graphics.rectangle("line", e.x, e.y, e.width, e.height)
 
-		for i, snack in ipairs(Snacks.getSnacks()) do
+		for i, snack in ipairs(currentRoom.snacks) do
 			love.graphics.rectangle("line", snack.x, snack.y, snack.width, snack.height)
 		end
 
@@ -83,11 +102,11 @@ function love.keypressed(key)
 		GameState.set(C.STATE.PLAYING)
 	end
 	if key == "r" and not GameState.isPlaying() then
-		Player.reset()
+		Player.reset(C.DOOR_POSITION.BOTTOM)
 		Enemy.reset()
-		Snacks.reset()
-		Map.reset()
-		GameState.set(C.STATE.PLAYING)
+		currentRoom = Room.generate(1)
+		currentLevel = 1
+		GameState.reset()
 	end
 	if key == "f" then
 		love.window.setFullscreen(not love.window.getFullscreen())
